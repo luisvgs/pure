@@ -4,6 +4,7 @@ pub enum Expr {
     Int(i32),
     Bool(bool),
     Symbol(String),
+    Pair(Box<Expr>, Box<Expr>),
     Lambda(Vec<String>, Vec<Expr>),
     List(Vec<Expr>),
 }
@@ -17,6 +18,7 @@ impl std::fmt::Display for Expr {
                 true => write!(f, "#t"),
                 _ => write!(f, "#f"),
             },
+            Expr::Pair(a, b) => write!(f, "({} . {})", a, b),
             Expr::Symbol(s) => write!(f, "{}", s),
             Expr::List(list) => {
                 write!(f, "(")?;

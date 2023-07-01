@@ -31,6 +31,7 @@ pub fn eval_obj(obj: &Expr, env: &mut Rc<RefCell<Env>>) -> Result<Expr, String> 
         Expr::Lambda(_params, _body) => Ok(Expr::Nil),
         Expr::Symbol(s) => eval_symbol(s.to_string(), env),
         Expr::List(lst) => eval_list(lst, env),
+        _ => unimplemented!(),
     }
 }
 
@@ -187,8 +188,9 @@ pub fn eval_list(list: &Vec<Expr>, env: &mut Rc<RefCell<Env>>) -> Result<Expr, S
             "+" | "-" | "*" | "/" | "<" | ">" | "=" | "!=" | "or" => {
                 return eval_binary_op(&list, env);
             }
-            "define" => eval_define(&list, env),
+            "val" => eval_define(&list, env),
             "if" => eval_if(&list, env),
+            "pair" => eval_pair(&list, env),
             "lambda" => eval_function_definition(&list, env),
             _ => eval_function_call(s.to_string(), &list, env),
         },
@@ -204,6 +206,12 @@ pub fn eval_list(list: &Vec<Expr>, env: &mut Rc<RefCell<Env>>) -> Result<Expr, S
             Ok(Expr::List(new_list))
         }
     }
+}
+pub fn eval_pair(list: &Vec<Expr>, env: &mut Rc<RefCell<Env>>) -> Result<Expr, String> {
+    let lhs = eval_obj(&list[1].clone(), env)?;
+    let rhs = eval_obj(&list[2].clone(), env)?;
+
+    Ok(Expr::Pair(Box::new(lhs), Box::new(rhs)))
 }
 
 pub fn tokenize(program: &str) -> Result<Vec<Token>, String> {
@@ -230,14 +238,14 @@ pub fn tokenize(program: &str) -> Result<Vec<Token>, String> {
 pub fn parse_list(tokens: &mut Vec<Token>) -> Result<Expr, String> {
     let token = tokens.pop();
     if token != Some(Token::LParen) {
-        return Err("WHoppsies".into());
+        return Err("Expected (.".into());
     }
 
     let mut list: Vec<Expr> = Vec::new();
     while !tokens.is_empty() {
         let token = tokens.pop();
         if token == None {
-            return Err("WHoppsies".into());
+            return Err("Tokenization error".into());
         }
         let t = token.unwrap();
         match t {
@@ -264,7 +272,7 @@ pub fn parse(tokens: &str) -> Result<Expr, String> {
     let token_result = tokenize(tokens);
 
     if token_result.is_err() {
-        return Err("Whoops".into());
+        return Err("Token error".into());
     }
     let mut tokens_ = token_result.unwrap().into_iter().rev().collect::<Vec<_>>();
     let parsed_list = parse_list(&mut tokens_)?;
@@ -279,7 +287,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     reader.set_prompt(format!("{}", "~> ").as_ref()).unwrap();
 
     while let ReadResult::Input(input) = reader.read_line().unwrap() {
-        if input.eq("exit") {
+        if input.eq(":q") {
             break;
         }
         let val = eval(input.as_ref(), &mut env)?;
@@ -336,7 +344,11 @@ fn should_eval_expressions() {
         ("(> 58 70)", Expr::Bool(false)),
         ("(or #t #f)", Expr::Bool(true)),
         ("(or #t #t)", Expr::Bool(true)),
-        ("((define x 10) (+ x x) )", Expr::List(vec![Expr::Int(20)])),
+        (
+            "(pair 3 2)",
+            Expr::Pair(Box::new(Expr::Int(3)), Box::new(Expr::Int(2))),
+        ),
+        ("((val x 10) (+ x x) )", Expr::List(vec![Expr::Int(20)])),
     ];
     for (input, expected) in cases.into_iter() {
         let parsed: Expr = eval_obj(&parse(input).unwrap(), &mut env).unwrap();
