@@ -92,12 +92,12 @@ fn should_eval_functions() {
     let cases = [(
         "(
         (val foo
-            (fn (x)
-            (+ x x))
+            (fn (x y)
+            (+ x y))
         )
-        (foo 10)
+        (foo 10 20)
         )",
-        Expr::List(vec![Expr::Int(20)]),
+        Expr::List(vec![Expr::Int(30)]),
     )];
     for (input, expected) in cases.into_iter() {
         let parsed: Expr = eval_obj(&parse(input).unwrap(), &mut env).unwrap();
