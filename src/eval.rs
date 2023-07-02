@@ -177,6 +177,17 @@ pub fn eval_if(list: &Vec<Expr>, env: &mut Rc<RefCell<Env>>) -> Result<Expr, Str
         _ => eval_obj(&list[3], env),
     }
 }
+
+pub fn eval_empty(list: &Vec<Expr>, env: &mut Rc<RefCell<Env>>) -> Result<Expr, String> {
+    let mut dummy = false;
+    if let Expr::List(list_val) = &list[1] {
+        if list_val.len() == 0 {
+            dummy = true
+        }
+    }
+    Ok(Expr::Bool(dummy))
+}
+
 pub fn eval_list(list: &Vec<Expr>, env: &mut Rc<RefCell<Env>>) -> Result<Expr, String> {
     let head = &list[0];
     match head {
@@ -186,6 +197,7 @@ pub fn eval_list(list: &Vec<Expr>, env: &mut Rc<RefCell<Env>>) -> Result<Expr, S
             }
             "val" => eval_define(&list, env),
             "if" => eval_if(&list, env),
+            "empty?" => eval_empty(&list, env),
             "pair" => eval_pair(&list, env),
             "fn" => eval_function_definition(&list, env),
             _ => eval_function_call(s.to_string(), &list, env),
