@@ -13,6 +13,18 @@ mod tokenizer;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let reader = Interface::new("~> ").unwrap();
     let mut env = Env::new();
+    env.borrow_mut().vars.insert(
+        "custom".into(),
+        Expr::Builtin(|expr: Vec<Expr>| {
+            let mut dummy = false;
+            if let Expr::List(list_val) = &expr[0] {
+                if list_val.len() == 0 {
+                    dummy = true
+                }
+            }
+            Ok(Expr::Bool(dummy))
+        }),
+    );
 
     reader.set_prompt(format!("{}", "~> ").as_ref()).unwrap();
 

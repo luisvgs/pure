@@ -135,6 +135,10 @@ pub fn eval_function_call(
             }
             return eval_obj(&Expr::List(body.to_vec()), &mut new_env);
         }
+        Expr::Builtin(f) => {
+            let res = f(list[1..].to_vec())?;
+            Ok(res)
+        }
         _ => return Err(format!("Not a lambda: {}", s)),
     }
 }

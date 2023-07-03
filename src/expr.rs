@@ -6,6 +6,7 @@ pub enum Expr {
     Symbol(String),
     Pair(Box<Expr>, Box<Expr>),
     Lambda(Vec<String>, Vec<Expr>),
+    Builtin(fn(Vec<Expr>) -> Result<Expr, String>),
     List(Vec<Expr>),
 }
 
@@ -30,7 +31,7 @@ impl std::fmt::Display for Expr {
                 }
                 write!(f, ")")
             }
-            _ => todo!(),
+            _ => unreachable!(),
         }
     }
 }
