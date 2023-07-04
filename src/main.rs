@@ -75,7 +75,7 @@ fn should_eval_expressions() {
     use crate::parser::parse;
     let mut env = Env::new();
     let cases = [
-        ("(+2 1)", Expr::Int(3)),
+        ("(+ 2 1)", Expr::Int(3)),
         ("(- 9 3)", Expr::Int(6)),
         ("(/ 10 2)", Expr::Int(5)),
         ("(= 3 3)", Expr::Bool(true)),
