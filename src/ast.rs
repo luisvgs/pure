@@ -1,4 +1,4 @@
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum Token {
     Int(i32),
     Symbol(String),
@@ -7,4 +7,5 @@ pub enum Token {
     True,
     False,
     Nil,
+    Quote,
 }

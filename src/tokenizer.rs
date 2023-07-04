@@ -10,6 +10,7 @@ pub fn tokenize(program: &str) -> Result<Vec<Token>, String> {
         match word {
             "(" => tokens.push(Token::LParen),
             ")" => tokens.push(Token::RParen),
+            "'" => tokens.push(Token::Quote),
             "#t" => tokens.push(Token::True),
             "#f" => tokens.push(Token::False),
             "nil" => tokens.push(Token::Nil),

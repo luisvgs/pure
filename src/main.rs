@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let reader = Interface::new("~> ").unwrap();
     let mut env = Env::new();
     env.borrow_mut().vars.insert(
-        "custom".into(),
+        "empty?".into(),
         Expr::Builtin(|expr: Vec<Expr>| {
             let mut dummy = false;
             if let Expr::List(list_val) = &expr[0] {
@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if input.eq(":q") {
             break;
         }
-        let val = eval(input.as_ref(), &mut env)?;
+        let val = eval(&input, &mut env)?;
         match val {
             Expr::Nil => {}
             Expr::Int(n) => println!("{}", n),
@@ -75,7 +75,7 @@ fn should_eval_expressions() {
     use crate::parser::parse;
     let mut env = Env::new();
     let cases = [
-        ("(+ 2 1)", Expr::Int(3)),
+        ("(+2 1)", Expr::Int(3)),
         ("(- 9 3)", Expr::Int(6)),
         ("(/ 10 2)", Expr::Int(5)),
         ("(= 3 3)", Expr::Bool(true)),

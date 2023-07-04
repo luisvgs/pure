@@ -8,6 +8,7 @@ pub enum Expr {
     Lambda(Vec<String>, Vec<Expr>),
     Builtin(fn(Vec<Expr>) -> Result<Expr, String>),
     List(Vec<Expr>),
+    Quote(Box<Expr>),
 }
 
 impl std::fmt::Display for Expr {
@@ -19,6 +20,7 @@ impl std::fmt::Display for Expr {
                 true => write!(f, "#t"),
                 _ => write!(f, "#f"),
             },
+            Expr::Quote(e) => write!(f, "{}", e),
             Expr::Pair(a, b) => write!(f, "({} . {})", a, b),
             Expr::Symbol(s) => write!(f, "{}", s),
             Expr::List(list) => {

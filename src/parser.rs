@@ -1,4 +1,5 @@
 use crate::{ast::*, expr::*, tokenizer::*};
+
 pub fn parse_list(tokens: &mut Vec<Token>) -> Result<Expr, String> {
     let token = tokens.pop();
     if token != Some(Token::LParen) {
@@ -26,6 +27,7 @@ pub fn parse_list(tokens: &mut Vec<Token>) -> Result<Expr, String> {
             Token::RParen => {
                 return Ok(Expr::List(list));
             }
+            Token::Quote => continue,
         }
     }
 
